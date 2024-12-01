@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
