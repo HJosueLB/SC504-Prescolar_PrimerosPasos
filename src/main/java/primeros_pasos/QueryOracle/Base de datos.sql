@@ -508,5 +508,105 @@ BEGIN
 END;
 /
 
-
+------------------------------------------------------------------
+--------------------------Funciones-------------------------------
+------------------------------------------------------------------
+ 
+--1 Función para obtener el promedio de estudiantes por grupo
+CREATE OR REPLACE FUNCTION PROMEDIO_ESTUDIANTES_GRUPO
+RETURN NUMBER
+IS
+    promedio NUMBER;
+BEGIN
+    SELECT AVG(total_estudiantes) INTO promedio
+    FROM (
+        SELECT COUNT(*) AS total_estudiantes
+        FROM Estudiante
+        GROUP BY IdGrupo
+    );
+    RETURN promedio;
+END;
+/
+ 
+ 
+--2 Función para obtener la cantidad de tareas pendientes por grupo
+ 
+CREATE OR REPLACE FUNCTION CANTIDAD_TAREAS_PENDIENTES (p_IdGrupo IN NUMBER)
+RETURN NUMBER
+IS
+    cantidad NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO cantidad
+    FROM Tarea
+    WHERE IdGrupo = p_IdGrupo
+      AND DueDate > SYSDATE; -- Tareas pendientes
+    RETURN cantidad;
+END;
+/
+ 
+ 
+--3 Función para validar correos electrónicos
+ 
+CREATE OR REPLACE FUNCTION VALIDAR_CORREO (p_Email IN VARCHAR2)
+RETURN NUMBER
+IS
+    count_emails NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO count_emails
+    FROM (
+        SELECT Email FROM UsuarioInterno
+        UNION ALL
+        SELECT Email FROM Profesor
+        UNION ALL
+        SELECT Email FROM PadreDeFamilia
+    )
+    WHERE Email = p_Email;
+ 
+    RETURN count_emails;
+END;
+/
+ 
+--4 Función para calcular la edad promedio de los estudiantes
+ 
+CREATE OR REPLACE FUNCTION EDAD_PROMEDIO_ESTUDIANTES
+RETURN NUMBER
+IS
+    promedio_edad NUMBER;
+BEGIN
+    SELECT AVG(TRUNC(MONTHS_BETWEEN(SYSDATE, DateOfBirth) / 12)) INTO promedio_edad
+    FROM Estudiante;
+    RETURN promedio_edad;
+END;
+/
+ 
+-- 5 Función para contar anuncios por usuario interno
+ 
+CREATE OR REPLACE FUNCTION CONTAR_ANUNCIOS_USUARIO (p_IdUsuario IN NUMBER)
+RETURN NUMBER
+IS
+    total_anuncios NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO total_anuncios
+    FROM Anuncio
+    WHERE IdUsuarioInterno = p_IdUsuario;
+    RETURN total_anuncios;
+END;
+/
+ 
+ 
+--invocar las funciones
+--Para obtener el promedio de estudiantes por grupo:
+SELECT PROMEDIO_ESTUDIANTES_GRUPO() FROM DUAL;
+ 
+--Para contar tareas pendientes de un grupo:
+SELECT CANTIDAD_TAREAS_PENDIENTES(1) FROM DUAL;
+ 
+--Validar si un correo está registrado:
+SELECT VALIDAR_CORREO('example@mail.com') FROM DUAL;
+ 
+--Para calcular la edad promedio:
+SELECT EDAD_PROMEDIO_ESTUDIANTES() FROM DUAL;
+ 
+--Para contar los anuncios de un usuario interno:
+SELECT CONTAR_ANUNCIOS_USUARIO(1) FROM DUAL;
 
