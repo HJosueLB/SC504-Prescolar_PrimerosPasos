@@ -18,31 +18,23 @@ public class TareaService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
-    // Configuración para llamar procedimiento almacenado OBTENERGRUPOS
     public List<Grupo> obtenerGrupos() {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("OBTENERGRUPOS")
                 .returningResultSet("p_grupo", new BeanPropertyRowMapper<>(Grupo.class));
 
-        // Ejecutar el procedimiento y obtiene los resultados
         Map<String, Object> result = jdbcCall.execute();
-        // Obtener la lista desde el cursor
         return (List<Grupo>) result.get("p_grupo");
     }
 
-    // Configuración para llamar procedimiento almacenado OBTENERPROFESORES
     public List<Profesor> obtenerProfesores() {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("ObtenerProfesores")
                 .returningResultSet("p_profesores", new BeanPropertyRowMapper<>(Profesor.class));
-
-        // Ejecutar el procedimiento y obtiene los resultados
         Map<String, Object> result = jdbcCall.execute();
-        // Obtener la lista desde el cursor
         return (List<Profesor>) result.get("p_profesores");
     }
 
-    // Método para asignar una tarea
     @Transactional
     public void asignarTarea(String description, java.util.Date dueDate, int idGrupo, int idProfesor) {
         try {
